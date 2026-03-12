@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BookOcean インフルエンサー戦略</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #f5f3ef;
+    color: #222;
+    font-family: 'Noto Sans JP', sans-serif;
+    padding: 40px 24px 60px;
+  }
+
+  h1 {
+    text-align: center;
+    font-size: 1.3rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    color: #222;
+    margin-bottom: 6px;
+  }
+
+  .subtitle {
+    text-align: center;
+    font-size: 0.75rem;
+    color: #888;
+    letter-spacing: 0.15em;
+    margin-bottom: 44px;
+  }
+
+  .section-heading {
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    color: #555;
+    text-align: center;
+    margin-bottom: 16px;
+  }
+
+  /* ===================== TABLE ===================== */
+  .table-wrap {
+    max-width: 1050px;
+    margin: 0 auto 60px;
+    overflow-x: auto;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.78rem;
+    background: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  }
+
+  thead tr {
+    background: #333;
+    color: #fff;
+  }
+
+  thead th {
+    padding: 10px 12px;
+    text-align: center;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+  }
+
+  tbody tr:nth-child(even) { background: #fafaf8; }
+  tbody tr:hover { background: #f0ede6; }
+
+  tbody td {
+    padding: 9px 12px;
+    border-bottom: 1px solid #eee;
+    vertical-align: middle;
+    line-height: 1.5;
+  }
+
+  td.layer-cell {
+    font-weight: 700;
+    font-size: 0.7rem;
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  td.name-cell {
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  td.center { text-align: center; }
+
+  /* 層バッジ */
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-size: 0.65rem;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  .badge.origin { background: #fde68a; color: #7a5c00; }
+  .badge.layer1 { background: #dbeeff; color: #1a5f7a; }
+  .badge.layer2 { background: #ede9f7; color: #5a3d8a; }
+  .badge.unknown { background: #eee; color: #888; }
+
+  /* 難易度・影響度・コンテンツ力 */
+  .rank { font-weight: 700; }
+  .rank.high { color: #c0392b; }
+  .rank.mid { color: #d35400; }
+  .rank.low { color: #27ae60; }
+  .rank.top { color: #8e44ad; }
+
+  td.備考 { font-size: 0.72rem; color: #555; }
+
+  /* ===================== DIAGRAM ===================== */
+  .chart {
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+
+  .section { margin-bottom: 10px; }
+
+  .section-title {
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    color: #999;
+    text-align: center;
+    margin-bottom: 14px;
+  }
+
+  .nodes-row {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .node {
+    padding: 10px 14px;
+    text-align: center;
+    min-width: 108px;
+    border-radius: 6px;
+    border: 2px solid;
+  }
+
+  .node .name { font-size: 0.9rem; font-weight: 700; line-height: 1.4; }
+  .node .role { font-size: 0.6rem; margin-top: 3px; opacity: 0.75; }
+  .node .via {
+    font-size: 0.58rem;
+    margin-top: 5px;
+    padding: 2px 7px;
+    border-radius: 20px;
+    display: inline-block;
+    font-weight: 700;
+  }
+
+  .node.origin { border-color: #d4a017; background: #fffbe8; }
+  .node.origin .name { color: #a07800; }
+  .node.origin .via { background: #fde68a; color: #7a5c00; }
+
+  .node.layer1 { border-color: #2e86ab; background: #eef7fc; }
+  .node.layer1 .name { color: #1a5f7a; }
+
+  .node.layer2 { border-color: #7b5ea7; background: #f4f0fa; }
+  .node.layer2 .name { color: #5a3d8a; }
+
+  .node.unknown { border-color: #ccc; border-style: dashed; background: #fafafa; }
+  .node.unknown .name { color: #aaa; }
+
+  .arrow-divider { text-align: center; font-size: 1.4rem; color: #bbb; margin: 14px 0 6px; }
+
+  .conn-grid {
+    display: flex;
+    justify-content: center;
+    gap: 32px;
+    flex-wrap: wrap;
+    margin: 16px 0;
+  }
+
+  .conn-group {
+    background: #fff;
+    border: 1px solid #e0dcd4;
+    border-radius: 8px;
+    padding: 12px 16px;
+    min-width: 160px;
+  }
+
+  .conn-from {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #555;
+    margin-bottom: 8px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid #eee;
+  }
+
+  .conn-item {
+    font-size: 0.7rem;
+    color: #444;
+    padding: 3px 0;
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+  }
+
+  .conn-item::before { content: '→'; color: #aaa; font-size: 0.65rem; flex-shrink: 0; }
+  .conn-item .target { font-weight: 700; }
+  .conn-item .target.t1 { color: #1a5f7a; }
+  .conn-item .target.t2 { color: #5a3d8a; }
+  .conn-item .note { color: #aaa; font-size: 0.6rem; }
+
+  .section-divider { width: 60%; height: 1px; background: #ddd; margin: 28px auto; }
+
+  .legend {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    flex-wrap: wrap;
+    margin-top: 40px;
+  }
+
+  .legend-item { display: flex; align-items: center; gap: 7px; font-size: 0.7rem; color: #666; }
+  .legend-box { width: 14px; height: 14px; border-radius: 3px; border: 2px solid; }
+  .legend-box.o { border-color: #d4a017; background: #fffbe8; }
+  .legend-box.l1 { border-color: #2e86ab; background: #eef7fc; }
+  .legend-box.l2 { border-color: #7b5ea7; background: #f4f0fa; }
+  .legend-box.u { border-color: #ccc; border-style: dashed; background: #fafafa; }
+
+  .page-divider {
+    width: 80%;
+    height: 2px;
+    background: linear-gradient(to right, transparent, #ccc, transparent);
+    margin: 50px auto;
+  }
+</style>
+</head>
+<body>
+
+<h1>BookOcean　インフルエンサー戦略</h1>
+<div class="subtitle">アプローチリスト ＆ 連鎖設計図</div>
+
+<!-- ========== TABLE ========== -->
+<div class="section-heading">── アプローチ候補リスト ──</div>
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr>
+      <th>層</th>
+      <th>氏名</th>
+      <th>カテゴリー</th>
+      <th>アプローチ難易度</th>
+      <th>インフルエンス影響度</th>
+      <th>コンテンツ力</th>
+      <th>備考</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class="layer-cell"><span class="badge origin">起点層</span></td>
+      <td class="name-cell">佐渡島庸平</td>
+      <td>編集者・出版人</td>
+      <td class="center"><span class="rank low">低</span></td>
+      <td class="center"><span class="rank mid">中</span></td>
+      <td class="center"><span class="rank high">高</span></td>
+      <td class="備考">コルク代表。クリエイター・スタートアップ層への影響力。直接連絡可</td>
+    </tr>
+    <tr>
+      <td class="layer-cell"><span class="badge origin">起点層</span></td>
+      <td class="name-cell">出口治明</td>
+      <td>経営者×読書家</td>
+      <td class="center"><span class="rank mid">中</span></td>
+      <td class="center"><span class="rank high">高</span></td>
+      <td class="center"><span class="rank high">高</span></td>
+      <td class="備考">「1万冊」で有名。蔵書家としての必然性が高い。直接連絡可</td>
+    </tr>
+    <tr>
+      <td class="layer-cell"><span class="badge origin">起点層</span></td>
+      <td class="name-cell">伊藤羊一</td>
+      <td>経営者・教育者</td>
+      <td class="center"><span class="rank low">低</span></td>
+      <td class="center"><span class="rank mid">中</span></td>
+      <td class="center"><span class="rank mid">中</span></td>
+      <td class="備考">武蔵野大学教授。株主。安宅和人への紹介ルートあり</td>
+    </tr>
+    <tr>
+      <td class="layer-cell"><span class="badge origin">起点層</span></td>
+      <td class="name-cell">米倉誠一郎</td>
+      <td>思想・学者</td>
+      <td class="center"><span class="rank low">低</span></td>
+      <td class="center"><span class="rank mid">中</span></td>
+      <td class="center"><span class="rank high">高</span></td>
+      <td class="備考">一橋大名誉教授。株主。楠木健への紹介ルートあり</td>
+    </tr>
+    <tr>
+      <td class="layer-cell"><span class="badge layer1">第一層</span></td>
+      <td class="name-cell">見城徹</td>
+      <td>編集者・出版人</td>
+      <td class="center"><span class="rank high">高</span></td>
+      <td class="center"><span class="rank top">最高</span></td>
+      <td class="center"><span class="rank top">最高</span></td>
+      <td class="備考">幻冬舎代表。本との親和性・格ともに最高。幻冬舎著者への連鎖が強力</td>
+    </tr>
+    <tr>
+      <td class="layer-cell"><span class="badge layer1">第一層</span></td>
+      <td class="name-cell">山口周</td>
+      <td>思想・学者</td>
+      <td class="center"><span class="rank mid">中</span></td>
+      <td class="center"><span class="rank high">高</span></td>
+      <td class="center"><span class="rank high">高</span></td>
+      <td class="備考">経営者層への影響力が最も安定。SNS発信も活発</td>
+    </tr>
+    <tr>
+      <td class="layer-cell"><span class="badge layer1">第一層</span></td>
+      <td class="name-cell">楠木健</td>
+      <td>思想・学者</td>
+      <td class="center"><span class="rank mid">中</span></td>
+      <td class="center"><span class="rank high">高</span></td>
+      <td class="center"><span class="rank mid">中</span></td>
+      <td class="備考">一橋大教授。経営者からの知的権威として信頼厚い</td>
+    </tr>
+    <tr>
+      <td class="layer-cell"><span class="badge layer1">第一層</span></td>
+      <td class="name-cell">安宅和人</td>
+      <td>思想・学者</td>
+      <td class="center"><span class="rank mid">中</span></td>
+      <td class="center"><span class="rank mid">中</span></td>
+      <td class="center"><span class="rank mid">中</span></td>
+      <td class="備考">ヤフー・慶應。データ系経営者層への影響力あり</td>
+    </tr>
+    <tr>
+      <td class="layer-cell"><span class="badge layer1">第一層</span></td>
+      <td class="name-cell">養老孟司</td>
+      <td>思想・学者</td>
+      <td class="center"><span class="rank high">高</span></td>
+      <td class="center"><span class="rank high">高</span></td>
+      <td class="center"><span class="rank top">最高</span></td>
+      <td class="備考">蔵書量・書斎コンテンツとして最高峰。高齢のため要配慮</td>
+    </tr>
+    <tr>
+      <td class="layer-cell"><span class="badge layer1">第一層</span></td>
+      <td class="name-cell">池上彰</td>
+      <td>メディア・解説者</td>
+      <td class="center"><span class="rank mid">中</span></td>
+      <td class="center"><span class="rank high">高</span></td>
+      <td class="center"><span class="rank high">高</span></td>
+      <td class="備考">読書家キャラ確立。幅広い層への影響力と格を兼ね備える</td>
+    </tr>
+    <tr>
+      <td class="layer-cell"><span class="badge layer1">第一層</span></td>
+      <td class="name-cell">松浦弥太郎</td>
+      <td>編集者・文化人</td>
+      <td class="center"><span class="rank low">低</span></td>
+      <td class="center"><span class="rank mid">中</span></td>
+      <td class="center"><span class="rank top">最高</span></td>
+      <td class="備考">COW BOOKS主宰。本との親和性は全候補中トップクラス</td>
+    </tr>
+    <tr>
+      <td class="layer-cell"><span class="badge layer1">第一層</span></td>
+      <td class="name-cell">又吉直樹</td>
+      <td>作家</td>
+      <td class="center"><span class="rank mid">中</span></td>
+      <td class="center"><span class="rank high">高</span></td>
+      <td class="center"><span class="rank high">高</span></td>
+      <td class="備考">芥川賞・読書家キャラ確立。幅広い層への影響力と文化的格を兼ね備える</td>
+    </tr>
+    <tr>
+      <td class="layer-cell"><span class="badge layer1">第一層</span></td>
+      <td class="name-cell">川上未映子</td>
+      <td>作家</td>
+      <td class="center"><span class="rank mid">中</span></td>
+      <td class="center"><span class="rank mid">中</span></td>
+      <td class="center"><span class="rank high">高</span></td>
+      <td class="備考">文学的権威性高い。文化人・知識人層への波及力あり</td>
+    </tr>
+    <tr>
+      <td class="layer-cell"><span class="badge layer1">第一層</span></td>
+      <td class="name-cell">村上龍</td>
+      <td>作家</td>
+      <td class="center"><span class="rank high">高</span></td>
+      <td class="center"><span class="rank high">高</span></td>
+      <td class="center"><span class="rank top">最高</span></td>
+      <td class="備考">経済・社会への視点で経営者層からの敬意が厚い。コンテンツとして圧倒的</td>
+    </tr>
+    <tr>
+      <td class="layer-cell"><span class="badge layer2">第二層</span></td>
+      <td class="name-cell">林真理子</td>
+      <td>作家</td>
+      <td class="center"><span class="rank mid">中</span></td>
+      <td class="center"><span class="rank mid">中</span></td>
+      <td class="center"><span class="rank high">高</span></td>
+      <td class="備考">日本女子大学長。幻冬舎著者。女性経営者・文化人層への影響力あり</td>
+    </tr>
+    <tr>
+      <td class="layer-cell"><span class="badge layer2">第二層</span></td>
+      <td class="name-cell">平野啓一郎</td>
+      <td>作家</td>
+      <td class="center"><span class="rank mid">中</span></td>
+      <td class="center"><span class="rank mid">中</span></td>
+      <td class="center"><span class="rank high">高</span></td>
+      <td class="備考">芥川賞・知識人層への影響力。思想系経営者に刺さる</td>
+    </tr>
+    <tr>
+      <td class="layer-cell"><span class="badge layer2">第二層</span></td>
+      <td class="name-cell">幅允孝</td>
+      <td>ブックディレクター</td>
+      <td class="center"><span class="rank low">低</span></td>
+      <td class="center"><span class="rank mid">中</span></td>
+      <td class="center"><span class="rank top">最高</span></td>
+      <td class="備考">本のプロフェッショナルとして格高い。文化人・経営者層への影響力あり</td>
+    </tr>
+    <tr>
+      <td class="layer-cell"><span class="badge layer2">第二層</span></td>
+      <td class="name-cell">原田マハ</td>
+      <td>作家</td>
+      <td class="center"><span class="rank low">低</span></td>
+      <td class="center"><span class="rank mid">中</span></td>
+      <td class="center"><span class="rank high">高</span></td>
+      <td class="備考">美術×小説。文化的感度の高い経営者・ビジネス層への影響力あり</td>
+    </tr>
+    <tr>
+      <td class="layer-cell"><span class="badge layer2">第二層</span></td>
+      <td class="name-cell">角田光代</td>
+      <td>作家</td>
+      <td class="center"><span class="rank mid">中</span></td>
+      <td class="center"><span class="rank mid">中</span></td>
+      <td class="center"><span class="rank mid">中</span></td>
+      <td class="備考">文学賞受賞多数。女性読書家層への影響力高い</td>
+    </tr>
+    <tr>
+      <td class="layer-cell"><span class="badge layer2">第二層</span></td>
+      <td class="name-cell">藤原正彦</td>
+      <td>思想・学者</td>
+      <td class="center"><span class="rank mid">中</span></td>
+      <td class="center"><span class="rank mid">中</span></td>
+      <td class="center"><span class="rank high">高</span></td>
+      <td class="備考">「国家の品格」著者。保守系経営者層への影響力あり</td>
+    </tr>
+    <tr>
+      <td class="layer-cell"><span class="badge layer2">第二層</span></td>
+      <td class="name-cell">佐々木俊尚</td>
+      <td>ジャーナリスト</td>
+      <td class="center"><span class="rank low">低</span></td>
+      <td class="center"><span class="rank mid">中</span></td>
+      <td class="center"><span class="rank high">高</span></td>
+      <td class="備考">読書家キャラ確立。テック系・メディア系経営者層への影響力あり</td>
+    </tr>
+    <tr>
+      <td class="layer-cell"><span class="badge layer2">第二層</span></td>
+      <td class="name-cell">橘玲</td>
+      <td>作家・論客</td>
+      <td class="center"><span class="rank mid">中</span></td>
+      <td class="center"><span class="rank high">高</span></td>
+      <td class="center"><span class="rank high">高</span></td>
+      <td class="備考">経済・社会系の著作が経営者層に刺さる。読書量で有名</td>
+    </tr>
+    <tr>
+      <td class="layer-cell"><span class="badge layer2">第二層</span></td>
+      <td class="name-cell">池井戸潤</td>
+      <td>作家</td>
+      <td class="center"><span class="rank mid">中</span></td>
+      <td class="center"><span class="rank mid">中</span></td>
+      <td class="center"><span class="rank mid">中</span></td>
+      <td class="備考">エンタメ寄りだがネガティブ要素なし。読者層が広く拡散力あり</td>
+    </tr>
+    <tr>
+      <td class="layer-cell"><span class="badge unknown">別途戦略</span></td>
+      <td class="name-cell">村上春樹</td>
+      <td>作家</td>
+      <td class="center"><span class="rank top">最高</span></td>
+      <td class="center"><span class="rank top">最高</span></td>
+      <td class="center"><span class="rank top">最高</span></td>
+      <td class="備考">格は最高峰だが現実的なアプローチは極めて困難</td>
+    </tr>
+    <tr>
+      <td class="layer-cell"><span class="badge unknown">別途戦略</span></td>
+      <td class="name-cell">東野圭吾</td>
+      <td>作家</td>
+      <td class="center"><span class="rank top">最高</span></td>
+      <td class="center"><span class="rank high">高</span></td>
+      <td class="center"><span class="rank mid">中</span></td>
+      <td class="備考">日本最大の読者層。事務所経由のアプローチが難関</td>
+    </tr>
+    <tr>
+      <td class="layer-cell"><span class="badge unknown">別途戦略</span></td>
+      <td class="name-cell">高村薫</td>
+      <td>作家</td>
+      <td class="center"><span class="rank high">高</span></td>
+      <td class="center"><span class="rank mid">中</span></td>
+      <td class="center"><span class="rank high">高</span></td>
+      <td class="備考">文学的格が高く知性派経営者層から敬意あり。接点未確定</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<div class="page-divider"></div>
+
+<!-- ========== DIAGRAM ========== -->
+<div class="section-heading">── 連鎖設計図 ──</div>
+
+<div class="chart">
+
+  <div class="section">
+    <div class="section-title">起点層 ── 直接アクセス可能</div>
+    <div class="nodes-row">
+      <div class="node origin"><div class="name">佐渡島庸平</div><div class="role">編集者・コルク代表</div><div class="via">直接連絡可</div></div>
+      <div class="node origin"><div class="name">出口治明</div><div class="role">経営者×読書家</div><div class="via">直接連絡可</div></div>
+      <div class="node origin"><div class="name">伊藤羊一</div><div class="role">武蔵野大学教授</div><div class="via">株主</div></div>
+      <div class="node origin"><div class="name">米倉誠一郎</div><div class="role">一橋大名誉教授</div><div class="via">株主</div></div>
+    </div>
+  </div>
+
+  <div class="arrow-divider">↓</div>
+
+  <div class="section">
+    <div class="section-title">起点層 → 第一層への連鎖</div>
+    <div class="conn-grid">
+      <div class="conn-group">
+        <div class="conn-from">佐渡島庸平 より</div>
+        <div class="conn-item"><span class="target t1">見城徹</span><span class="note">出版界のつながり</span></div>
+        <div class="conn-item"><span class="target t1">松浦弥太郎</span><span class="note">文化人つながり</span></div>
+        <div class="conn-item"><span class="target t1">又吉直樹</span><span class="note">コルク所属</span></div>
+        <div class="conn-item"><span class="target t1">川上未映子</span><span class="note">文芸つながり</span></div>
+      </div>
+      <div class="conn-group">
+        <div class="conn-from">出口治明 より</div>
+        <div class="conn-item"><span class="target t1">山口周</span><span class="note">知的系譜</span></div>
+        <div class="conn-item"><span class="target t1">池上彰</span><span class="note">教養人つながり</span></div>
+        <div class="conn-item"><span class="target t1">村上龍</span><span class="note">経済・社会視点</span></div>
+      </div>
+      <div class="conn-group">
+        <div class="conn-from">伊藤羊一 より</div>
+        <div class="conn-item"><span class="target t1">安宅和人</span><span class="note">直接紹介可</span></div>
+      </div>
+      <div class="conn-group">
+        <div class="conn-from">米倉誠一郎 より</div>
+        <div class="conn-item"><span class="target t1">楠木健</span><span class="note">直接紹介可</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="arrow-divider">↓</div>
+
+  <div class="section">
+    <div class="section-title">第一層 ── 権威・影響力層</div>
+    <div class="nodes-row">
+      <div class="node layer1"><div class="name">見城徹</div><div class="role">幻冬舎代表</div></div>
+      <div class="node layer1"><div class="name">山口周</div><div class="role">思想家</div></div>
+      <div class="node layer1"><div class="name">楠木健</div><div class="role">一橋大教授</div></div>
+      <div class="node layer1"><div class="name">安宅和人</div><div class="role">慶應教授</div></div>
+      <div class="node layer1"><div class="name">養老孟司</div><div class="role">解剖学者</div></div>
+      <div class="node layer1"><div class="name">松浦弥太郎</div><div class="role">COW BOOKS</div></div>
+      <div class="node layer1"><div class="name">又吉直樹</div><div class="role">作家</div></div>
+      <div class="node layer1"><div class="name">川上未映子</div><div class="role">作家</div></div>
+      <div class="node layer1"><div class="name">池上彰</div><div class="role">ジャーナリスト</div></div>
+      <div class="node layer1"><div class="name">村上龍</div><div class="role">作家</div></div>
+    </div>
+  </div>
+
+  <div class="arrow-divider">↓</div>
+
+  <div class="section">
+    <div class="section-title">第一層 → 第二層への連鎖</div>
+    <div class="conn-grid">
+      <div class="conn-group">
+        <div class="conn-from">見城徹 より</div>
+        <div class="conn-item"><span class="target t2">林真理子</span><span class="note">幻冬舎著者</span></div>
+        <div class="conn-item"><span class="target t2">養老孟司</span><span class="note">幻冬舎著者</span></div>
+        <div class="conn-item"><span class="target t2">村上龍</span><span class="note">幻冬舎著者</span></div>
+      </div>
+      <div class="conn-group">
+        <div class="conn-from">松浦弥太郎 より</div>
+        <div class="conn-item"><span class="target t2">幅允孝</span><span class="note">本の世界</span></div>
+        <div class="conn-item"><span class="target t2">原田マハ</span><span class="note">文化人</span></div>
+      </div>
+      <div class="conn-group">
+        <div class="conn-from">山口周 より</div>
+        <div class="conn-item"><span class="target t2">平野啓一郎</span><span class="note">思想系</span></div>
+        <div class="conn-item"><span class="target t2">藤原正彦</span><span class="note">知性派</span></div>
+      </div>
+      <div class="conn-group">
+        <div class="conn-from">安宅和人 より</div>
+        <div class="conn-item"><span class="target t2">佐々木俊尚</span><span class="note">テック系</span></div>
+      </div>
+      <div class="conn-group">
+        <div class="conn-from">又吉直樹 より</div>
+        <div class="conn-item"><span class="target t2">角田光代</span><span class="note">文芸</span></div>
+      </div>
+      <div class="conn-group">
+        <div class="conn-from">楠木健 より</div>
+        <div class="conn-item"><span class="target t2">山口周</span><span class="note">経営学者</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="arrow-divider">↓</div>
+
+  <div class="section">
+    <div class="section-title">第二層 ── 拡散層</div>
+    <div class="nodes-row">
+      <div class="node layer2"><div class="name">林真理子</div><div class="role">作家・日本女子大学長</div></div>
+      <div class="node layer2"><div class="name">平野啓一郎</div><div class="role">作家</div></div>
+      <div class="node layer2"><div class="name">幅允孝</div><div class="role">ブックディレクター</div></div>
+      <div class="node layer2"><div class="name">原田マハ</div><div class="role">作家</div></div>
+      <div class="node layer2"><div class="name">角田光代</div><div class="role">作家</div></div>
+      <div class="node layer2"><div class="name">藤原正彦</div><div class="role">数学者・作家</div></div>
+      <div class="node layer2"><div class="name">佐々木俊尚</div><div class="role">ジャーナリスト</div></div>
+      <div class="node layer2"><div class="name">橘玲</div><div class="role">作家・論客</div></div>
+    </div>
+  </div>
+
+  <div class="section-divider"></div>
+
+  <div class="section">
+    <div class="section-title">別途戦略が必要</div>
+    <div class="nodes-row">
+      <div class="node unknown"><div class="name">村上春樹</div><div class="role">接触困難</div></div>
+      <div class="node unknown"><div class="name">東野圭吾</div><div class="role">事務所経由</div></div>
+      <div class="node unknown"><div class="name">池井戸潤</div><div class="role">事務所経由</div></div>
+      <div class="node unknown"><div class="name">高村薫</div><div class="role">接点未確定</div></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="legend">
+  <div class="legend-item"><div class="legend-box o"></div>起点層（直接アクセス可）</div>
+  <div class="legend-item"><div class="legend-box l1"></div>第一層（権威・影響力層）</div>
+  <div class="legend-item"><div class="legend-box l2"></div>第二層（拡散層）</div>
+  <div class="legend-item"><div class="legend-box u"></div>別途戦略が必要</div>
+</div>
+
+</body>
+</html>
